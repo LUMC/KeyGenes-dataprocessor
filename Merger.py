@@ -8,9 +8,15 @@ class GeneAliasRetriever:
     @staticmethod
     def get_alias(ensg_id):
         result = mg.getgenes([ensg_id], fields="name,symbol")
-        if not result:
-            return []
-        return [ensg_id, result[0]['name'], result[0]['symbol']]
+        try:
+            return [ensg_id, result[0]['name'], result[0]['symbol']]
+        except:
+            if len(result) > 2:
+                print(result)
+                return [ensg_id, '', result[0]['symbol']]
+            else:
+                return [ensg_id]
+
 
 
 class DataFormater:
@@ -28,10 +34,14 @@ class DataFormater:
 
     def get_gene_refs(self):
         unique_ids = list(set(self.genesIDs))
-        with open('gene_ref_data.txt', 'w') as file:
+        ngnenes = len(unique_ids)
+        n=0
+        with open('gene_ref_data.txt', 'w') as gene_file:
             for gene_index in range(0, len(unique_ids)):
-                file.write(','.join(GeneAliasRetriever.get_alias(unique_ids[gene_index])))
-        file.close()
+                n+=1
+                print('Gene ID {current}/{total}'.format(current=n, total=ngnenes))
+                gene_file.write(','.join(GeneAliasRetriever.get_alias(unique_ids[gene_index]))+"\n")
+        gene_file.close()
 
     def format_transcription_data(self, merged_files):
         column_names = merged_files.columns
