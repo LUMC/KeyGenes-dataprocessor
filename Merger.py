@@ -51,7 +51,6 @@ class DataFormater:
                 phase = name_items[1].split(".")[0]
                 data_group = self.get_phase(phase)
                 new_df.loc[row] = [gene_index, tissue_name, data_group, counts[column_index]]
-            break
         return new_df
 
     def get_phase(self, tissue_ref):
