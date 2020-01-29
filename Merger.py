@@ -9,7 +9,7 @@ class GeneAliasRetriever:
     def get_alias(ensg_id):
         result = mg.getgenes([ensg_id], fields="name,symbol")
         if not result:
-            raise SystemError
+            return []
         return [ensg_id, result[0]['name'], result[0]['symbol']]
 
 
@@ -22,36 +22,35 @@ class DataFormater:
 
     def merge_transcription_data(self):
         merged_files = self.get_file_content()
-        transcription_data = self.format_transcription_data(merged_files)
-        gene_name_data = self.get_gene_refs()
-        self.write_ouput(transcription_data, gene_name_data)
+        self.format_transcription_data(merged_files)
+        self.get_gene_refs()
+
 
     def get_gene_refs(self):
-        new_df = pd.DataFrame(columns=['ID', 'Name', 'Symbol'])
         unique_ids = list(set(self.genesIDs))
-        for gene_index in range(0, len(unique_ids)):
-            new_df.loc[gene_index] = GeneAliasRetriever.get_alias(unique_ids[gene_index])
-        return new_df
+        with open('gene_ref_data.txt', 'w') as file:
+            for gene_index in range(0, len(unique_ids)):
+                file.write(','.join(GeneAliasRetriever.get_alias(unique_ids[gene_index])))
+        file.close()
 
     def format_transcription_data(self, merged_files):
-        new_df = pd.DataFrame(columns=['Gene', 'Tissue', 'Stage', 'Count'])
-
         column_names = merged_files.columns
         row_file=0
         row = 0
         line_n = len(merged_files)
-        for gene_index, counts in merged_files.iterrows():
-            row_file+=1
-            print('Formatting line {n}/{total}'.format(n=row_file+1, total=line_n))
-            self.genesIDs.append(gene_index)
-            for column_index in range(0, len(column_names)):
-                row+=1
-                name_items = column_names[column_index].split("_")
-                tissue_name = name_items[0]
-                phase = name_items[1].split(".")[0]
-                data_group = self.get_phase(phase)
-                new_df.loc[row] = [gene_index, tissue_name, data_group, counts[column_index]]
-        return new_df
+        with open('transcription_data.txt', 'w') as file:
+            for gene_index, counts in merged_files.iterrows():
+                row_file+=1
+                print('Formatting line {n}/{total}'.format(n=row_file, total=line_n))
+                self.genesIDs.append(gene_index)
+                for column_index in range(0, len(column_names)):
+                    row+=1
+                    name_items = column_names[column_index].split("_")
+                    tissue_name = name_items[0]
+                    phase = name_items[1].split(".")[0]
+                    data_group = self.get_phase(phase)
+                    file.write(','.join([gene_index, tissue_name, data_group, str(counts[column_index])])+'\n')
+        file.close()
 
     def get_phase(self, tissue_ref):
         for index, item in self.data_groups.items():
@@ -63,12 +62,8 @@ class DataFormater:
         contents = []
         for input_file in self.input_files:
             contents.append(pd.read_table(input_file, index_col=0).astype(int))
-        return pd.concat(contents, axis=1, sort=True)
 
-    @staticmethod
-    def write_ouput(transcription_data, gene_name_data):
-        transcription_data.to_csv('transcription_data.csv')
-        gene_name_data.to_csv('gene_name_data.csv')
+        return pd.concat(contents, axis=1, sort=True)
 
 
 if __name__ == '__main__':
