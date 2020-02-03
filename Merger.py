@@ -59,7 +59,7 @@ class DataFormater:
                     tissue_name = name_items[0]
                     phase = name_items[1].split(".")[0]
                     data_group = self.get_phase(phase)
-                    file.write(','.join([gene_index, tissue_name, data_group, str(counts[column_index])])+'\n')
+                    file.write(';'.join([gene_index, tissue_name, data_group, str(counts[column_index])])+'\n')
         file.close()
 
     def get_phase(self, tissue_ref):
