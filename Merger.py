@@ -64,6 +64,8 @@ class DataFormater:
 
     def get_phase(self, tissue_ref):
         for index, item in self.data_groups.items():
+		print(tissue_ref)
+	    sys.exit()	
             if tissue_ref in item:
                 return index
         raise SystemError
