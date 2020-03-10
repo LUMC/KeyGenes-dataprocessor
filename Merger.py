@@ -40,7 +40,7 @@ class DataFormater:
             for gene_index in range(0, len(unique_ids)):
                 n+=1
                 print('Gene ID {current}/{total}'.format(current=n, total=ngnenes))
-                gene_file.write(','.join(GeneAliasRetriever.get_alias(unique_ids[gene_index]))+"\n")
+                gene_file.write(';'.join(GeneAliasRetriever.get_alias(unique_ids[gene_index]))+"\n")
         gene_file.close()
 
     def format_transcription_data(self, merged_files):
@@ -81,8 +81,10 @@ if __name__ == '__main__':
     input_files = ['datasets/training_adult.txt', 'datasets/training_fetal.txt']
     data_groups = {
         'adult': ['adult'],
-        '1t': ['9'],
-        '2t': ['16-18', '22'],
+        '9-weeks': ['9'],
+        '16-weeks': ['16'],
+        '18-weeks': ['18'],
+        '22-weeks': ['22'],
     }
     data_formater = DataFormater(input_files, data_groups)
     data_formater.merge_transcription_data()
