@@ -65,7 +65,6 @@ class DataFormater:
     def get_phase(self, tissue_ref):
 
         for index, item in self.data_groups.items():
-            print(item, tissue_ref)
             if tissue_ref in item:
                 return index
         raise SystemError
@@ -84,8 +83,7 @@ if __name__ == '__main__':
     data_groups = {
         'adult': ['adult'],
         '9-weeks': ['9'],
-        '16-weeks': ['16'],
-        '18-weeks': ['18'],
+        '16:18-weeks': ['16-18'],
         '22-weeks': ['22'],
     }
     data_formater = DataFormater(input_files, data_groups)
