@@ -1,5 +1,6 @@
 import pandas as pd
 import mygene
+import sys
 
 mg = mygene.MyGeneInfo()
 
@@ -21,15 +22,19 @@ class GeneAliasRetriever:
 
 class DataFormater:
 
-    def __init__(self, input_files, data_groups):
+    def __init__(self, input_files, data_groups, setting):
         self.input_files = input_files
         self.data_groups = data_groups
+        self.setting = setting
         self.genesIDs = []
 
     def merge_transcription_data(self):
         merged_files = self.get_file_content()
-        self.format_transcription_data(merged_files)
-        self.get_gene_refs()
+        if self.setting == '-g':
+            self.get_gene_refs()
+        else:
+            self.format_transcription_data(merged_files)
+            self.get_gene_refs()
 
 
     def get_gene_refs(self):
@@ -86,6 +91,6 @@ if __name__ == '__main__':
         '16:18-weeks': ['16-18'],
         '22-weeks': ['22'],
     }
-    data_formater = DataFormater(input_files, data_groups)
+    data_formater = DataFormater(input_files, data_groups, sys.argv[1])
     data_formater.merge_transcription_data()
 
