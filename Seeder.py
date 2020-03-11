@@ -62,6 +62,7 @@ if __name__ == '__main__':
     DATABASE = os.getenv("DATABASE")
     REF_FILE = os.getenv("REF_FILE")
     COUNT_FILE = os.getenv("COUNT_FILE")
+    print(HOST, USERNAME, PASSWORD, DATABASE, REF_FILE, COUNT_FILE)
     seeder = Seeder(
         host=HOST,
         username=USERNAME,
