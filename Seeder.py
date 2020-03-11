@@ -17,6 +17,7 @@ class Seeder(db):
             for line in f:
                 line = line.replace('\n', '').replace('\r', '')
                 items = line.split(';')
+                print("Inserting items: ", items)
                 self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES ('{ensg}', '{symbol}', '{desc}')".format(
                     ensg=items[0], symbol=items[2], desc=items[1]
                 ))
