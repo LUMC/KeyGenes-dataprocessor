@@ -61,11 +61,15 @@ class Seeder(db):
                 line = line.replace('\n', '').replace('\r', '')
                 items = line.split(';')
                 result = self.connection.execute("SELECT id FROM gene WHERE ensg = '{gname}'".format(gname=items[0]))
-                self.connection.execute("INSERT INTO transcript (gene, stage, tissue, count) VALUES ('{gene}', '{stage}', '{tissue}', '{count}')".format(
-                    gene=[item[0] for item in result][0], stage=stages[items[2]], tissue=tissues[items[1]],
-                    count=items[3]
-                ))
-                print("Inserted gene count: ", items[0])
+                try:
+                    self.connection.execute("INSERT INTO transcript (gene, stage, tissue, count) VALUES ('{gene}', '{stage}', '{tissue}', '{count}')".format(
+                        gene=[item[0] for item in result][0], stage=stages[items[2]], tissue=tissues[items[1]],
+                        count=items[3]
+                    ))
+                    print("Inserted gene count: ", items[0])
+                except:
+                    print('!!! Error adding count: {}'.format(items[0]))
+                    time.sleep(5)
         print('--- All counts inserted! ---')
         self.connection.close()
 
