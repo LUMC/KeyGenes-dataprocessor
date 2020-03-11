@@ -13,6 +13,7 @@ class Seeder(db):
 
     def insert_gene_ref(self):
         self.connect_to_db(self.database)
+        self.connection.execute('DELETE FROM gene;')
         with open(self.gene_ref_file) as f:
             for line in f:
                 line = line.replace('\n', '').replace('\r', '')
