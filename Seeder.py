@@ -24,9 +24,9 @@ class Seeder(db):
                             ensg=items[0]
                         ))
                     else:
-                        self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES ('{ensg}', '{symbol}', '{desc}')".format(
-                            ensg=items[0], symbol=items[2], desc=items[1]
-                        ))
+                        self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES ('%s', '%s', '%s')",
+                                                [items[0], items[2], items[1]]
+                        )
                     print("Inserted gene: ", items[0])
                 except:
                     print('!!! Error adding: {}'.format(items[0]))
