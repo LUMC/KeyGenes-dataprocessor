@@ -17,7 +17,6 @@ class Seeder(db):
             for line in f:
                 line = line.replace('\n', '').replace('\r', '')
                 items = line.split(';')
-                print("Inserting items: ", items)
                 try:
                     if len(items) < 3:
                         self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES ('{ensg}')".format(
@@ -27,8 +26,10 @@ class Seeder(db):
                         self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES ('{ensg}', '{symbol}', '{desc}')".format(
                             ensg=items[0], symbol=items[2], desc=items[1]
                         ))
+                    print("Inserted gene: ", items[0])
                 except:
                     print('!!! Error adding: {}'.format(items[0]))
+        print('--- All genes inserted! ---')
         self.connection.close()
 
 
@@ -63,8 +64,10 @@ class Seeder(db):
                         gene=[item[0] for item in result][0], stage=stages[items[2]], tissue=tissues[items[1]],
                         count=items[3]
                     ))
+                    print("Inserted gene count: ", items[0])
                 except:
                     print('!!! Error adding count: {}'.format(items[0]))
+        print('--- All counts inserted! ---')
         self.connection.close()
 
 if __name__ == '__main__':
