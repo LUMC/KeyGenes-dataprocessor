@@ -68,6 +68,7 @@ if __name__ == '__main__':
     seeder = Seeder(
         dialect=DB_DIALECT,
         driver=DB_DRIVER,
+        host=HOST,
         username=USERNAME,
         password=PASSWORD,
         database=DATABASE,
