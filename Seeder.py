@@ -18,9 +18,17 @@ class Seeder(db):
                 line = line.replace('\n', '').replace('\r', '')
                 items = line.split(';')
                 print("Inserting items: ", items)
-                self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES ('{ensg}', '{symbol}', '{desc}')".format(
-                    ensg=items[0], symbol=items[2], desc=items[1]
-                ))
+                try:
+                    if len(items) < 3:
+                        self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES ('{ensg}')".format(
+                            ensg=items[0]
+                        ))
+                    else:
+                        self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES ('{ensg}', '{symbol}', '{desc}')".format(
+                            ensg=items[0], symbol=items[2], desc=items[1]
+                        ))
+                except:
+                    print('!!! Error adding: {}'.format(items[0]))
         self.connection.close()
 
 
@@ -50,10 +58,13 @@ class Seeder(db):
                 line = line.replace('\n', '').replace('\r', '')
                 items = line.split(';')
                 result = self.connection.execute("SELECT id FROM gene WHERE ensg = '{gname}'".format(gname=items[0]))
-                self.connection.execute("INSERT INTO transcript (gene, stage, tissue, count) VALUES ('{gene}', '{stage}', '{tissue}', '{count}')".format(
-                    gene=[item[0] for item in result][0], stage=stages[items[2]], tissue=tissues[items[1]],
-                    count=items[3]
-                ))
+                try:
+                    self.connection.execute("INSERT INTO transcript (gene, stage, tissue, count) VALUES ('{gene}', '{stage}', '{tissue}', '{count}')".format(
+                        gene=[item[0] for item in result][0], stage=stages[items[2]], tissue=tissues[items[1]],
+                        count=items[3]
+                    ))
+                except:
+                    print('!!! Error adding count: {}'.format(items[0]))
         self.connection.close()
 
 if __name__ == '__main__':
