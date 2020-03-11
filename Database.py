@@ -2,30 +2,15 @@ from sqlalchemy import create_engine
 
 
 class db:
-    def __init__(self, host, username, password, database=None):
-        self.dialect = 'mysql'
-        self.driver = 'pymysql'
-        self.host = 'localhost'
+    def __init__(self, dialect, driver, host, username, password, database=None):
+        self.dialect = dialect
+        self.driver = driver
+        self.host = host
         self.username = username
         self.password = password
         self.database = database
         self.connection = None
 
-    def connect(self):
-        engine = create_engine('{dialect}+{driver}://{user}:{password}@{host}'.format(
-            dialect=self.dialect,
-            driver=self.driver,
-            user=self.username,
-            password=self.password,
-            host=self.host
-        ))
-        try:
-            connection = engine.connect()
-            self.connection = connection
-            return True
-        except Exception as error:
-            print("\nDatabase connection failed\nTry again...\n")
-            return False
 
     def connect_to_db(self, name):
         engine = create_engine('{dialect}+{driver}://{user}:{password}@{host}/{database}'.format(

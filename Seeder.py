@@ -5,8 +5,8 @@ import settings
 
 class Seeder(db):
 
-    def __init__(self,host, username, password, database, gene_ref_file, gene_count_file):
-        super().__init__(host, username, password)
+    def __init__(self, dialect, driver, host, username, password, database, gene_ref_file, gene_count_file):
+        super().__init__(dialect, driver, host, username, password)
         self.database = database
         self.gene_ref_file= gene_ref_file
         self.gene_count_file= gene_count_file
@@ -56,6 +56,8 @@ class Seeder(db):
         self.connection.close()
 
 if __name__ == '__main__':
+    DB_DIALECT = os.getenv("DB_DIALECT")
+    DB_DRIVER = os.getenv("DB_DRIVER")
     HOST = os.getenv("HOST")
     USERNAME = os.getenv("USERNAME")
     PASSWORD = os.getenv("PASSWORD")
@@ -64,7 +66,8 @@ if __name__ == '__main__':
     COUNT_FILE = os.getenv("COUNT_FILE")
     print(HOST, USERNAME, PASSWORD, DATABASE, REF_FILE, COUNT_FILE)
     seeder = Seeder(
-        host=HOST,
+        dialect=DB_DIALECT,
+        driver=DB_DRIVER,
         username=USERNAME,
         password=PASSWORD,
         database=DATABASE,
