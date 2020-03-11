@@ -1,4 +1,4 @@
-import os
+import os, time
 from Database import db
 from dotenv import load_dotenv
 import settings
@@ -29,6 +29,7 @@ class Seeder(db):
                         ))
                     print("Inserted gene: ", items[0])
                 except:
+                    time.sleep(5)
                     print('!!! Error adding: {}'.format(items[0]))
         print('--- All genes inserted! ---')
         self.connection.close()
@@ -67,6 +68,7 @@ class Seeder(db):
                     ))
                     print("Inserted gene count: ", items[0])
                 except:
+                    time.sleep(5)
                     print('!!! Error adding count: {}'.format(items[0]))
         print('--- All counts inserted! ---')
         self.connection.close()
