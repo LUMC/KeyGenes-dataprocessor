@@ -19,7 +19,7 @@ class Seeder(db):
                 items = line.split(';')
                 try:
                     if len(items) < 3:
-                        self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES ('{ensg}')".format(
+                        self.connection.execute("INSERT INTO gene (ensg) VALUES ('{ensg}')".format(
                             ensg=items[0]
                         ))
                     else:
