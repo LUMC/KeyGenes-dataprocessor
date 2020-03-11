@@ -24,7 +24,7 @@ class Seeder(db):
                             ensg=items[0]
                         ))
                     else:
-                        self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES ('%s', '%s', '%s')",
+                        self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES (%s, %s, %s)",
                                                 [items[0], items[2], items[1]]
                         )
                     print("Inserted gene: ", items[0])
