@@ -17,14 +17,11 @@ class Seeder(db):
             for line in f:
                 line = line.replace('\n', '').replace('\r', '')
                 items = line.split(';')
-                try:
-                    self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES ('{ensg}', '{symbol}', '{desc}')".format(
-                        ensg=items[0], symbol=items[2], desc=items[1]
-                    ))
-                except:
-                    print('Entry already exist or error in adding record: {gene}'.format(gene=items[0]))
+                self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES ('{ensg}', '{symbol}', '{desc}')".format(
+                    ensg=items[0], symbol=items[2], desc=items[1]
+                ))
         self.connection.close()
-        print('All genes are inserted')
+
 
     def prepare_data(self, stage_file, tissue_file):
         stages = {}
@@ -51,14 +48,11 @@ class Seeder(db):
             for line in f:
                 line = line.replace('\n', '').replace('\r', '')
                 items = line.split(';')
-                try:
-                    result = self.connection.execute("SELECT id FROM gene WHERE ensg = '{gname}'".format(gname=items[0]))
-                    self.connection.execute("INSERT INTO transcript (gene, stage, tissue, count) VALUES ('{gene}', '{stage}', '{tissue}', '{count}')".format(
-                        gene=[item[0] for item in result][0], stage=stages[items[2]], tissue=tissues[items[1]],
-                        count=items[3]
-                    ))
-                except:
-                    print('!Error while adding adding count record: {gene}'.format(gene=items[0]))
+                result = self.connection.execute("SELECT id FROM gene WHERE ensg = '{gname}'".format(gname=items[0]))
+                self.connection.execute("INSERT INTO transcript (gene, stage, tissue, count) VALUES ('{gene}', '{stage}', '{tissue}', '{count}')".format(
+                    gene=[item[0] for item in result][0], stage=stages[items[2]], tissue=tissues[items[1]],
+                    count=items[3]
+                ))
         self.connection.close()
 
 if __name__ == '__main__':
