@@ -29,8 +29,8 @@ class Seeder(db):
                         ))
                     print("Inserted gene: ", items[0])
                 except:
-                    time.sleep(5)
                     print('!!! Error adding: {}'.format(items[0]))
+                    time.sleep(5)
         print('--- All genes inserted! ---')
         self.connection.close()
 
@@ -68,8 +68,8 @@ class Seeder(db):
                     ))
                     print("Inserted gene count: ", items[0])
                 except:
-                    time.sleep(5)
                     print('!!! Error adding count: {}'.format(items[0]))
+                    time.sleep(5)
         print('--- All counts inserted! ---')
         self.connection.close()
 
