@@ -12,8 +12,11 @@ class Seeder(db):
         self.gene_count_file= gene_count_file
 
     def insert_gene_ref(self):
+        print('Preparing....')
+        num_lines = sum(1 for line in open(self.gene_ref_file))
         self.connect_to_db(self.database)
         self.connection.execute('DELETE FROM gene;')
+        row = 1
         with open(self.gene_ref_file) as f:
             for line in f:
                 line = line.replace('\n', '').replace('\r', '')
@@ -27,7 +30,12 @@ class Seeder(db):
                         self.connection.execute("INSERT INTO gene (ensg, symbol, description) VALUES (%s, %s, %s)",
                                                 [items[0], items[2], items[1]]
                         )
-                    print("Inserted gene: ", items[0])
+                    print("Inserted gene: {gene} | {line}/{lines}".format(
+                        gene=items[0],
+                        line=row,
+                        lines=num_lines
+                    ))
+                    row += 1
                 except:
                     print('!!! Error adding: {}'.format(items[0]))
                     time.sleep(5)
@@ -53,6 +61,9 @@ class Seeder(db):
         return stages, tissues
 
     def insert_count(self, stage_file, tissue_file):
+        row = 1
+        print('Preparing....')
+        num_lines = sum(1 for line in open(self.gene_count_file))
         stages, tissues = self.prepare_data(stage_file,tissue_file )
         self.connect_to_db(self.database)
         self.connection.execute('DELETE FROM transcript;')
@@ -66,7 +77,12 @@ class Seeder(db):
                         gene=[item[0] for item in result][0], stage=stages[items[2]], tissue=tissues[items[1]],
                         count=items[3]
                     ))
-                    print("Inserted gene count: ", items[0])
+                    print("Inserted gene count: {gene} | {line}/{lines}".format(
+                        gene=items[0],
+                        line=row,
+                        lines=num_lines
+                    ))
+                    row += 1
                 except:
                     print('!!! Error adding count: {}'.format(items[0]))
                     time.sleep(5)
