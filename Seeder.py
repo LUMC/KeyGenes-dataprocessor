@@ -42,6 +42,27 @@ class Seeder(db):
         print('--- All genes inserted! ---')
         self.connection.close()
 
+    def update_genes(self, gene_items):
+        self.connect_to_db(self.database)
+        for item in gene_items:
+            print(item[0])
+            result = self.connection.execute("SELECT id FROM gene WHERE ensg='{old_ensg}'".format(
+                            old_ensg=item[0].split(".")[0]
+                        ))
+            if result:
+                print([item for item in result])
+        self.connection.close()
+
+    def correct_genes(self, reference_file):
+        gene_items = []
+        with open(reference_file) as f:
+            for line in f:
+                line = line.replace("\n", "")
+                items = line.split("  ")
+                gene_items.append(items)
+        self.update_genes(gene_items)
+
+
 
     def prepare_data(self, stage_file, tissue_file):
         stages = {}
@@ -110,4 +131,5 @@ if __name__ == '__main__':
         gene_count_file=COUNT_FILE,
     )
     # seeder.insert_gene_ref()
-    seeder.insert_count(stage_file='datasets/stage.csv', tissue_file='datasets/tissue.csv')
+    # seeder.insert_count(stage_file='datasets/stage.csv', tissue_file='datasets/tissue.csv')
+    seeder.correct_genes("updated_genes.txt")
