@@ -51,7 +51,7 @@ class Seeder(db):
         else:
             append_write = 'w'  # make a new file if not
 
-        highscore = open('log.txt', append_write)
+        highscore = open('.log', append_write)
         highscore.write(content+"\n")
         highscore.close()
 
