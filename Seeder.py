@@ -1,7 +1,10 @@
-import os, time
+import os, time, sys
 from Database import db
+from Merger import GeneAliasRetriever
+from sqlalchemy.exc import SQLAlchemyError
 from dotenv import load_dotenv
 import settings
+
 
 class Seeder(db):
 
@@ -42,15 +45,50 @@ class Seeder(db):
         print('--- All genes inserted! ---')
         self.connection.close()
 
+    def write_log(self, content):
+        if os.path.exists('log.txt'):
+            append_write = 'a'  # append if already exists
+        else:
+            append_write = 'w'  # make a new file if not
+
+        highscore = open('log.txt', append_write)
+        highscore.write(content+"\n")
+        highscore.close()
+
+    def update_gene(self, gene_id, db_ensg, old_ensg, new_ensg=None):
+        if new_ensg:
+            result = GeneAliasRetriever.get_alias(old_ensg)
+            if len(result) < 2:
+                result = GeneAliasRetriever.get_alias(new_ensg)
+        else:
+            result = GeneAliasRetriever.get_alias(old_ensg)
+        if len(result) > 2:
+            try:
+                self.connection.execute("UPDATE gene SET ensg =%s, description =%s, symbol=%s, old_ensg=%s WHERE id =%s",
+                                    [result[0], result[1], result[2], db_ensg, gene_id]
+                                    )
+            except SQLAlchemyError as e:
+                error = str(e.__dict__['orig'])
+                if "Duplicate entry" in error:
+                    self.write_log(error)
+                    self.connection.execute("DELETE FROM gene WHERE id='{id}'".format(id=gene_id))
+                print(error)
+
     def update_genes(self, gene_items):
         self.connect_to_db(self.database)
         for item in gene_items:
-            print(item[0])
-            result = self.connection.execute("SELECT id FROM gene WHERE ensg='{old_ensg}'".format(
+            result = self.connection.execute("SELECT id, ensg FROM gene WHERE ensg='{old_ensg}'".format(
                             old_ensg=item[0].split(".")[0]
                         ))
-            if result:
-                print([item for item in result])
+            gene = [item for item in result]
+            if gene:
+                gene = gene[0]
+                gene_id = gene[0]
+                ensg = gene[1]
+                if len(item) > 1:
+                    self.update_gene(gene_id, ensg, item[0], item[1])
+                else:
+                    self.update_gene(gene_id, ensg, item[0])
         self.connection.close()
 
     def correct_genes(self, reference_file):
@@ -58,7 +96,7 @@ class Seeder(db):
         with open(reference_file) as f:
             for line in f:
                 line = line.replace("\n", "")
-                items = line.split("  ")
+                items = line.split(" ")
                 gene_items.append(items)
         self.update_genes(gene_items)
 
@@ -110,6 +148,7 @@ class Seeder(db):
         print('--- All counts inserted! ---')
         self.connection.close()
 
+
 if __name__ == '__main__':
     DB_DIALECT = os.getenv("DB_DIALECT")
     DB_DRIVER = os.getenv("DB_DRIVER")
@@ -119,7 +158,6 @@ if __name__ == '__main__':
     DATABASE = os.getenv("DATABASE")
     REF_FILE = os.getenv("REF_FILE")
     COUNT_FILE = os.getenv("COUNT_FILE")
-    print(HOST, USERNAME, PASSWORD, DATABASE, REF_FILE, COUNT_FILE)
     seeder = Seeder(
         dialect=DB_DIALECT,
         driver=DB_DRIVER,

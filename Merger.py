@@ -83,7 +83,6 @@ class DataFormater:
 
 
 if __name__ == '__main__':
-
     input_files = ['datasets/training_adult.txt', 'datasets/training_fetal.txt']
     data_groups = {
         'adult': ['adult'],
