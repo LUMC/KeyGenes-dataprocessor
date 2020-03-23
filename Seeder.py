@@ -72,16 +72,20 @@ class Seeder(db):
                 if "Duplicate entry" in error:
                     self.write_log(error)
                     self.connection.execute("DELETE FROM gene WHERE id='{id}'".format(id=gene_id))
-                print(error)
+                print("---",error,"---")
 
     def update_genes(self, gene_items):
         self.connect_to_db(self.database)
+        total = len(gene_items)
+        n=0
         for item in gene_items:
+            n+=1
             result = self.connection.execute("SELECT id, ensg FROM gene WHERE ensg='{old_ensg}'".format(
                             old_ensg=item[0].split(".")[0]
                         ))
             gene = [item for item in result]
             if gene:
+                print("Gene updated: {ngene}/{ntotal}".format(ngene=n, ntotal=total))
                 gene = gene[0]
                 gene_id = gene[0]
                 ensg = gene[1]
@@ -99,8 +103,6 @@ class Seeder(db):
                 items = line.split(" ")
                 gene_items.append(items)
         self.update_genes(gene_items)
-
-
 
     def prepare_data(self, stage_file, tissue_file):
         stages = {}
@@ -158,6 +160,9 @@ if __name__ == '__main__':
     DATABASE = os.getenv("DATABASE")
     REF_FILE = os.getenv("REF_FILE")
     COUNT_FILE = os.getenv("COUNT_FILE")
+    INSERT_REF = os.getenv("INSERT_REF")
+    INSERT_COUNT = os.getenv("INSERT_COUNT")
+    CORRECT_GENES = os.getenv("CORRECT_GENES")
     seeder = Seeder(
         dialect=DB_DIALECT,
         driver=DB_DRIVER,
@@ -168,6 +173,9 @@ if __name__ == '__main__':
         gene_ref_file=REF_FILE,
         gene_count_file=COUNT_FILE,
     )
-    # seeder.insert_gene_ref()
-    # seeder.insert_count(stage_file='datasets/stage.csv', tissue_file='datasets/tissue.csv')
-    seeder.correct_genes("updated_genes.txt")
+    if INSERT_REF == "true":
+        seeder.insert_gene_ref()
+    if INSERT_COUNT == "true":
+        seeder.insert_count(stage_file='datasets/stage.csv', tissue_file='datasets/tissue.csv')
+    if CORRECT_GENES == "true":
+        seeder.correct_genes("updated_genes.txt")
