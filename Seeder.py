@@ -1,5 +1,6 @@
 import os, time, sys
 from Database import db
+from MaterialViews import MaterialViews
 from Merger import GeneAliasRetriever
 from sqlalchemy.exc import SQLAlchemyError
 from dotenv import load_dotenv
@@ -150,6 +151,9 @@ class Seeder(db):
         print('--- All counts inserted! ---')
         self.connection.close()
 
+    def run_mv(self):
+        self.connect_to_db(self.database)
+        MaterialViews(self.connection)
 
 if __name__ == '__main__':
     DB_DIALECT = os.getenv("DB_DIALECT")
@@ -163,6 +167,7 @@ if __name__ == '__main__':
     INSERT_REF = os.getenv("INSERT_REF")
     INSERT_COUNT = os.getenv("INSERT_COUNT")
     CORRECT_GENES = os.getenv("CORRECT_GENES")
+    RUN_MV = os.getenv("RUN_MV")
     seeder = Seeder(
         dialect=DB_DIALECT,
         driver=DB_DRIVER,
@@ -179,3 +184,5 @@ if __name__ == '__main__':
         seeder.insert_count(stage_file='datasets/stage.csv', tissue_file='datasets/tissue.csv')
     if CORRECT_GENES == "true":
         seeder.correct_genes("updated_genes.txt")
+    if RUN_MV == "true":
+        seeder.run_mv()
